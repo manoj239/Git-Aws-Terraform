@@ -8,9 +8,9 @@ terraform {
   }
 
   backend "s3" {
-    bucket               = "devopspracticestatefile"
-    key                  = "terraform.tfstate"
-    region               = "ap-south-1"
+    bucket = "devopspracticestatefile"
+    key    = "terraform.tfstate"
+    region = "ap-south-1"
   }
 }
 
