@@ -11,6 +11,8 @@ terraform {
     bucket = "devopspracticestatefile"
     key    = "terraform.tfstate"
     region = "ap-south-1"
+    dynamodb_table = "Devops-terraform-locks"
+    encrypt        = true
   }
 }
 
