@@ -27,11 +27,14 @@ resource "aws_instance" "web-1" {
     Owner = var.owner
   }
   user_data = <<-EOF
-		#!/bin/bash
+		    #!/bin/bash
         sudo apt-get update
         sudo apt-get install -y nginx jq net-tools unzip
         echo "<h1>$(cat /etc/hostname)</h1>" | sudo tee -a /var/www/html/index.nginx-debian.html
     EOF
+  lifecycle {
+    ignore_changes = [ user_data ]
+  }
 }
 
 resource "aws_instance" "web-2" {
@@ -46,5 +49,13 @@ resource "aws_instance" "web-2" {
     Env   = var.environment
     Owner = var.owner
   }
-
+  user_data = <<-EOF
+		    #!/bin/bash
+        sudo apt-get update
+        sudo apt-get install -y nginx jq net-tools unzip
+        echo "<h1>$(cat /etc/hostname)</h1>" | sudo tee -a /var/www/html/index.nginx-debian.html
+    EOF
+  lifecycle {
+    ignore_changes = [ user_data ]
+  }
 }
