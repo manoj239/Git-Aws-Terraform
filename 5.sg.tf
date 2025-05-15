@@ -26,4 +26,7 @@ resource "aws_security_group" "allow_all" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  lifecycle {
+    ignore_changes = [ingress]
+  }
 }

@@ -33,7 +33,8 @@ resource "aws_instance" "web-1" {
         echo "<h1>$(cat /etc/hostname)</h1>" | sudo tee -a /var/www/html/index.nginx-debian.html
     EOF
   lifecycle {
-    ignore_changes = [ user_data ]
+    ignore_changes  = [user_data, tags]
+    #prevent_destroy = true
   }
 }
 
@@ -56,6 +57,6 @@ resource "aws_instance" "web-2" {
         echo "<h1>$(cat /etc/hostname)</h1>" | sudo tee -a /var/www/html/index.nginx-debian.html
     EOF
   lifecycle {
-    ignore_changes = [ user_data ]
+    ignore_changes = [user_data, tags]
   }
 }
