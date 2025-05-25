@@ -1,5 +1,6 @@
-resource "aws_s3_bucket" "devopspracticestatefilenew" {
-  bucket = "devopspracticestatefilenew"
+resource "aws_s3_bucket" "devopspracticestatefilenew1" {
+  provider = aws.ohio
+  bucket   = "devopspracticestatefilenew1"
   #
   tags = {
     Name        = "devopspracticestatefilenew"
@@ -7,72 +8,35 @@ resource "aws_s3_bucket" "devopspracticestatefilenew" {
   }
 }
 
-resource "random_password" "password-1" {
+resource "random_password" "passwords" {
+  count            = 3
   length           = 16
   min_lower        = 4
   min_upper        = 4
   min_numeric      = 4
-  min_special      = 4
+  min_special      = 4  
   special          = true
   override_special = "!@$#"
-  depends_on       = [aws_s3_bucket.devopspracticestatefilenew]
   lifecycle {
     create_before_destroy = true
   }
 }
 
-resource "random_password" "password-2" {
-  length           = 16
-  min_lower        = 4
-  min_upper        = 4
-  min_numeric      = 4
-  min_special      = 4
-  special          = true
-  override_special = "!@$#"
-  depends_on       = [random_password.password-1]
-  lifecycle {
-    create_before_destroy = true
-  }
+resource "aws_secretsmanager_secret" "rds-secrrets" {
+  provider = aws.ohio
+  count    = 3
+  name     = "rds-secrrets-${count.index}"
 }
 
-resource "random_password" "password-3" {
-  length           = 16
-  min_lower        = 4
-  min_upper        = 4
-  min_numeric      = 4
-  min_special      = 4
-  special          = true
-  override_special = "!@$#"
-  depends_on       = [random_password.password-2]
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "random_password" "password-4" {
-  length           = 16
-  min_lower        = 4
-  min_upper        = 4
-  min_numeric      = 4
-  min_special      = 4
-  special          = true
-  override_special = "!@$#"
-  depends_on       = [random_password.password-3]
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "random_password" "password-5" {
-  length           = 16
-  min_lower        = 4
-  min_upper        = 4
-  min_numeric      = 4
-  min_special      = 4
-  special          = true
-  override_special = "!@$#"
-  depends_on       = [random_password.password-4]
-  lifecycle {
-    create_before_destroy = true
-  }
+# Creating a AWS secret versions for database master account (Masteraccountdb)
+resource "aws_secretsmanager_secret_version" "sversion" {
+  provider      = aws.ohio
+  count         = 3
+  secret_id     = element(aws_secretsmanager_secret.rds-secrrets[*].id, count.index)
+  secret_string = <<EOF
+   {
+   "username": "adminaccount",
+   "password": "${element(random_password.passwords[*].result, count.index)}"
+   }
+EOF
 }

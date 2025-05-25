@@ -1,32 +1,39 @@
-data "http" "myip" {
-  url = "https://ipv4.icanhazip.com"
-}
 
+locals {
+  ingress_ports = toset(var.ingress_ports)
+  egress_ports  = toset(var.egress_ports)
+  description   = upper("Allow all inbound traffic")
+}
 resource "aws_security_group" "allow_all" {
   name        = "allow_all"
-  description = "Allow all inbound traffic"
+  description = local.description
   vpc_id      = aws_vpc.default.id
 
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
+  dynamic "ingress" {
+    #for_each = var.ingress_ports
+    for_each = local.ingress_ports
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  lifecycle {
-    ignore_changes = [ingress]
+  dynamic "egress" {
+    for_each = local.egress_ports
+    content {
+      from_port   = egress.value
+      to_port     = egress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 }
+
+#ingress {
+#  from_port   = 0
+#  to_port     = 0
+#  protocol    = "-1"
+#  cidr_blocks = ["0.0.0.0/0"]
+#}

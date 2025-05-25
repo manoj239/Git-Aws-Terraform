@@ -9,17 +9,22 @@ resource "aws_route_table" "terraform-public" {
   }
 }
 
-resource "aws_route_table_association" "terraform-subnet-1" {
-  subnet_id      = aws_subnet.subnet1-public.id
+resource "aws_route_table" "terraform-private" {
+  vpc_id = aws_vpc.default.id
+  tags = {
+    Name = "${var.vpc_name}-private-route-table"
+  }
+}
+
+resource "aws_route_table_association" "public-subnets" {
+  #count          = 4
+  count          = length(var.public_subnet_cidrs)
+  subnet_id      = element(aws_subnet.public-subnets[*].id, count.index)
   route_table_id = aws_route_table.terraform-public.id
 }
 
-resource "aws_route_table_association" "terraform-subnet-2" {
-  subnet_id      = aws_subnet.subnet2-public.id
-  route_table_id = aws_route_table.terraform-public.id
-}
-
-resource "aws_route_table_association" "terraform-subnet-3" {
-  subnet_id      = aws_subnet.subnet3-public.id
-  route_table_id = aws_route_table.terraform-public.id
+resource "aws_route_table_association" "private-subnets" {
+  count          = length(var.private_subnet_cidrs)
+  subnet_id      = element(aws_subnet.private-subnets.*.id, count.index)
+  route_table_id = aws_route_table.terraform-private.id
 }
