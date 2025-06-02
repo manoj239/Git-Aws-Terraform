@@ -1,5 +1,6 @@
-resource "aws_s3_bucket" "devopspracticestatefilenew" {
-  bucket = "devopspracticestatefilenew"
+resource "aws_s3_bucket" "devopspracticestatefilenew1" {
+  provider = aws.ohio
+  bucket   = "devopspracticestatefilenew1"
   #
   tags = {
     Name        = "devopspracticestatefilenew"
@@ -12,10 +13,9 @@ resource "random_password" "password_1" {
   min_lower        = 4
   min_upper        = 4
   min_numeric      = 4
-  min_special      = 4
+  min_special      = 4  
   special          = true
   override_special = "!@$#"
-  depends_on       = [aws_s3_bucket.devopspracticestatefilenew]
   lifecycle {
     create_before_destroy = true
   }

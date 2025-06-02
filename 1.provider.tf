@@ -8,16 +8,21 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "devopspracticestatefile"
-    key            = "terraform.tfstate"
-    region         = "ap-south-1"
-    dynamodb_table = "Devops-terraform-locks"
-    encrypt        = true
+    bucket       = "devopspracticestatefile"
+    key          = "functions.tfstate"
+    region       = "ap-south-1"
+    use_lockfile = true # instead of dynamodb_table
+    encrypt      = true
   }
 }
 
 provider "aws" {
   region = var.aws_region
+}
+
+provider "aws" {
+  alias  = "ohio"
+  region = "us-east-2"
 }
 
 ##terraform force-unlock 79f392c7-0f31-5a1c-edf2-af3971c88955
