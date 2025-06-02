@@ -32,8 +32,8 @@ resource "aws_instance" "web-1" {
         sudo apt-get install -y nginx jq net-tools unzip
         echo "<h1>$(cat /etc/hostname)</h1>" | sudo tee -a /var/www/html/index.nginx-debian.html
     EOF
-  lifecycle {
-    ignore_changes  = [user_data, tags]
+     {
+    ignore_changes = [user_data, tags]
     #prevent_destroy = true
   }
 }
